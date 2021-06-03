@@ -93,16 +93,28 @@
     <script type="text/babel">
       // Main APP
       function App() {
+        const folders = [
+          { type: 'Folder', name: 'Folder 1', customerKey: 'AAA-AAAAA-AAAAA-AAAA'},
+          { type: 'Folder', name: 'Folder 2', customerKey: 'bbbb-AAAAA-AAAAA-AAAA'},
+          { type: 'Folder', name: 'Folder 3', customerKey: 'cccc-AAAAA-AAAAA-AAAA'}
+        ];
+
+        const dataExtensions = [
+          { type: 'DataExtension', name: 'Dummy DE 1', customerKey: '11', path: 'some/path', createdDate: (new Date()).toString() },
+          { type: 'DataExtension', name: 'Dummy DE 2', customerKey: '22', path: 'some/path', createdDate: (new Date()).toString() },
+          { type: 'DataExtension', name: 'Dummy DE 3', customerKey: '33', path: 'some/path', createdDate: (new Date()).toString() }
+        ];
+
         return (
           <div id="myApp">
             <AppHeader />
-            <AppTable />
+            <AppTable dataExtensions={dataExtensions} folders={folders} />
           </div>
         );
       }
 
       // Main table
-      function AppTable() {
+      function AppTable({ dataExtensions = [], folders = [] }) {
         return (
           <table className="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
@@ -133,7 +145,12 @@
               </tr>
             </thead>
             <tbody>
-              <DataExtensionItem />
+              {folders.map( folder =>
+                (<FolderItem key={folder.customerKey} {...folder} />)
+              )}
+              {dataExtensions.map( dataExtension =>
+                (<DataExtensionItem key={dataExtension.customerKey} {...dataExtension} />)
+              )}
             </tbody>
           </table>
         );
@@ -170,7 +187,7 @@
                 className="toggleOpenCloseIconImg"
               />
             </td>
-            <th data-label="FolderName" scope="row">
+            <th data-label="Data Extension Name" scope="row">
               <div className="slds-truncate" title="Data Extension Name">
                 <span className='linkToGetDataExtension' onClick={openDEData}>{name}</span>
               </div>
