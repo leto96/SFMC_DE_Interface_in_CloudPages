@@ -40,7 +40,7 @@
 
   <body>
     <div id="mydiv"></div>
-
+    
     <!-- REACT Scripts -->
     <script type="text/babel">
       // Main APP
@@ -95,7 +95,7 @@
       }
 
       function AppHeader() {
-        <div class="slds-page-header">
+        return (<div class="slds-page-header">
           <div class="slds-page-header__row">
             <div class="slds-page-header__col-title">
               <div class="slds-media">
@@ -133,7 +133,8 @@
               </div>
             </div>
           </div>
-        </div>;
+        </div>
+        );
       }
     
       ReactDOM.render(<App />, document.getElementById('mydiv'));
