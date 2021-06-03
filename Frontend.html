@@ -225,26 +225,14 @@
         return (
           <label
             className={setStyleClasses()}
-            htmlFor="example-unique-id-132"
             onMouseEnter={setHoveredColorHandler}
             onMouseLeave={setNormalColorHandler}
             onClick={clickHandler}
           >
-            <input
-              type="checkbox"
-              className="slds-assistive-text"
-              id="example-unique-id-132"
-              value="example-unique-id-132"
-              tabIndex="-1"
-            />
-            <span
-              className="slds-icon_container slds-icon-utility-check slds-current-color"
-            >
               <img
                 src={isOpen ? "./images/arrowdown_60.png" : "./images/arrow_right_60.png"}
                 className="toggleOpenCloseIconImg"
               />
-            </span>
           </label>
         );
       }
