@@ -29,6 +29,11 @@
 
       .myHeader {
         width: 100%;
+        flex: 1;
+      }
+
+      .findDEButton{
+        margin: 0 10px;
       }
 
       #myApp {
@@ -38,6 +43,11 @@
         justify-content: center;
         align-items: center;
         margin: 20px;
+      }
+
+      .searchDataExtensionContainer{
+        display: flex;
+        margin-top: auto; 
       }
     </style>
   </head>
@@ -57,6 +67,7 @@
         );
       }
 
+      // Main table
       function AppTable() {
         return (
           <table className="slds-table slds-table_cell-buffer slds-table_bordered">
@@ -102,6 +113,7 @@
         );
       }
 
+      // App Header
       function AppHeader() {
         return (
           <div className="slds-page-header myHeader">
@@ -128,8 +140,53 @@
                   </div>
                 </div>
               </div>
+              <DataExtensionSearch />
             </div>
           </div>
+        );
+      }
+
+      // Data Extension Search
+      function DataExtensionSearch(params) {
+        return (
+        <div className="slds-form searchDataExtensionContainer">
+          <div className="slds-form__row">
+            <div className="slds-form__item">
+                <label
+                  className="slds-form-element__label"
+                  htmlFor="form-element-03"
+                >
+                  Data Extension Name
+                </label>
+                <div
+                  className={
+                    "slds-form-element__control" +
+                    (/* hasError */false ? " slds-has-error" : "")
+                  }
+                >
+                  <input
+                    type="text"
+                    aria-invalid="true"
+                    aria-describedby="form-error-01"
+                    // value={deName}
+                    className="slds-input"
+                    // onChange={(e) => onChangeHandler(e.target.value)}
+                  />
+                  {/* hasError */false ? (
+                    <div className="slds-form-element__help" id="form-error-01">
+                      Must have at least 4 chars
+                    </div>
+                  ) : null}
+                </div>
+                  <button
+                    className="slds-button slds-button_brand findDEButton"
+                    // onClick={onClickHandler}
+                  >
+                    Find
+                  </button>
+              </div>
+          </div>
+        </div>
         );
       }
 
