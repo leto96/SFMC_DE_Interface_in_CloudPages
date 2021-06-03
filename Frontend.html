@@ -56,6 +56,15 @@
         margin: 20px;
       }
 
+      .linkToGetDataExtension{
+        cursor:pointer;
+        color:blue;
+      }
+
+      span.linkToGetDataExtension:hover {
+        text-decoration:underline;
+      }
+
       .toggleOpenCloseIconImg {
         width: 20px;
         height: 20px;
@@ -67,8 +76,12 @@
         margin-top: auto;
       }
 
-      .setDefaultCursor{
-        cursor: default; 
+      td {
+        max-width: 600px;
+      }
+
+      .setDefaultCursor {
+        cursor: default;
       }
     </style>
   </head>
@@ -120,7 +133,7 @@
               </tr>
             </thead>
             <tbody>
-              <FolderItem />
+              <DataExtensionItem />
             </tbody>
           </table>
         );
@@ -142,6 +155,45 @@
       // List Item
       function ListItem() {}
 
+      // Data Extension Item
+      function DataExtensionItem({
+        name = 'Dummy DE', customerKey = 'aaaa', path = 'some/path', createdDate = (new Date()).toString(),
+        openDEData = () => {alert('Open the DE');}
+      }) {
+
+        return (
+          <tr className="slds-hint-parent">
+            <td data-label="Open Icon" scope="row">
+              <img
+                title="Data Extension"
+                src="./images/database_60.png"
+                className="toggleOpenCloseIconImg"
+              />
+            </td>
+            <th data-label="FolderName" scope="row">
+              <div className="slds-truncate" title="Data Extension Name">
+                <span className='linkToGetDataExtension' onClick={openDEData}>{name}</span>
+              </div>
+            </th>
+            <td data-label="Customer Key">
+              <div className="slds-truncate" title="Customer Key">
+                {customerKey}
+              </div>
+            </td>
+            <td data-label="Date Created">
+              <div className="slds-truncate" title="Created Date">
+                {createdDate}
+              </div>
+            </td>
+            <td data-label="Path">
+              <div className="slds-truncate" title="Path">
+                {path}
+              </div>
+            </td>
+          </tr>
+        );
+      }
+
       // Item
       function FolderItem({ name = 'temporary', customerKey = 'AAA-AAAAA-AAAAA-AAAA'
         , openClickHandler = () => { console.log('clicked '); } }) {
@@ -155,26 +207,11 @@
                 {name}
               </div>
             </th>
-            {/* <td data-label="Customer Key">
-              <div className="slds-truncate" title="Customer Key">
-                hi
-              </div>
-            </td>
-            <td data-label="Date Created">
-              <div className="slds-truncate" title="date">
-                date
-              </div>
-            </td>
-            <td data-label="Path">
-              <div className="slds-truncate" title="Path">
-                hi
-              </div>
-            </td> */}
           </tr>
         );
       }
 
-      function ToggleFolder({ hasInnerContent = !false, openClickHandler }) {
+      function ToggleFolder({ hasInnerContent = false, openClickHandler }) {
         const { useState } = React;
 
         const [isHover, setIsHover] = useState(false);
@@ -214,7 +251,7 @@
         const setStyleClasses = () => {
           let classes = 'slds-checkbox-button';
           if(isHover){
-            classes += ' slds-checkbox-button_is-checked'; 
+            classes += ' slds-checkbox-button_is-checked';
           }
 
           if(!hasInnerContent){
