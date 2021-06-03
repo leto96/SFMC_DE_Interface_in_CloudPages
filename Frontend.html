@@ -1,0 +1,140 @@
+<html>
+  <head>
+    <title>React App</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.15.3/styles/salesforce-lightning-design-system.min.css"
+      integrity="sha512-CZHaPuEiGaHY7oMzQDCLXe77jneFoAu6XehZX5d3LNJWr99HAPSyM5jZ10IfmR8/v9a01m6m94IV8k7TJl1rMg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <style>
+      html {
+        background: #b0c4df;
+      }
+
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: "Salesforce Sans", -apple-system, BlinkMacSystemFont,
+          Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+          Helvetica Neue, sans-serif;
+      }
+
+      #mydiv {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="mydiv"></div>
+
+    <!-- REACT Scripts -->
+    <script type="text/babel">
+      // Main APP
+      function App() {
+        return (<div>
+          <AppHeader />
+          <AppTable />
+        </div>);
+      }
+
+      function AppTable() {
+        return (<table className="slds-table slds-table_cell-buffer slds-table_bordered">
+          <thead>
+            <tr className="slds-line-height_reset">
+              <th className="" scope="col">
+                <div className="slds-truncate" title="Name">
+                  Name
+                </div>
+              </th>
+              <th className="" scope="col">
+                <div className="slds-truncate" title="Customer Key">
+                  Customer Key
+                </div>
+              </th>
+              <th className="" scope="col">
+                <div className="slds-truncate" title="Date Created">
+                  Date Created
+                </div>
+              </th>
+              <th className="" scope="col">
+                <div className="slds-truncate" title="Path">
+                  Path
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>table</tbody>
+        </table>);
+      }
+
+      // Spinner
+      function Spinner() {
+        return (
+          <div className="demo-only demo-only_viewport">
+            <div role="status" className="slds-spinner slds-spinner_medium">
+              <span className="slds-assistive-text">Loading</span>
+              <div className="slds-spinner__dot-a"></div>
+              <div className="slds-spinner__dot-b"></div>
+            </div>
+          </div>
+        );
+      }
+
+      function AppHeader() {
+        <div class="slds-page-header">
+          <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+              <div class="slds-media">
+                <div class="slds-media__figure">
+                  <span
+                    class="slds-icon_container slds-icon-standard-opportunity"
+                    title="opportunity"
+                  >
+                    <svg
+                      class="slds-icon slds-page-header__icon"
+                      aria-hidden="true"
+                    >
+                      <img href="./box_notes.svg" />
+                    </svg>
+                    <span class="slds-assistive-text">DEs</span>
+                  </span>
+                </div>
+                <div class="slds-media__body">
+                  <div class="slds-page-header__name">
+                    <div class="slds-page-header__name-title">
+                      <h1>
+                        <span
+                          class="slds-page-header__title slds-truncate"
+                          title="Rohde Corp - 80,000 Widgets"
+                        >
+                          Rohde Corp - 80,000 Widgets
+                        </span>
+                      </h1>
+                    </div>
+                  </div>
+                  <p class="slds-page-header__name-meta">
+                    Mark Jaeckal • Unlimited Customer • 11/13/15
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>;
+      }
+    </script>
+  </body>
+</html>
