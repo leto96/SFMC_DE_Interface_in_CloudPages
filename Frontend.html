@@ -143,15 +143,16 @@
       function ListItem() {}
 
       // Item
-      function FolderItem() {
+      function FolderItem({ name = 'temporary', customerKey = 'AAA-AAAAA-AAAAA-AAAA'
+        , openClickHandler = () => { console.log('clicked '); } }) {
         return (
           <tr className="slds-hint-parent">
             <td data-label="Open Icon" scope="row">
-              <ToggleFolder />
+              <ToggleFolder openClickHandler={openClickHandler} />
             </td>
             <th data-label="FolderName" scope="row">
-              <div className="slds-truncate" title="FolderName">
-                Folder 1
+              <div className="slds-truncate" title={name}>
+                {name}
               </div>
             </th>
             {/* <td data-label="Customer Key">
@@ -173,7 +174,7 @@
         );
       }
 
-      function ToggleFolder({ hasInnerContent = false }) {
+      function ToggleFolder({ hasInnerContent = !false, openClickHandler }) {
         const { useState } = React;
 
         const [isHover, setIsHover] = useState(false);
@@ -192,7 +193,8 @@
         const openHandler = () => {
           setIsOpen(true);
           setIsHover(false);
-          // To do: display folders
+          openClickHandler();
+          // To do: display/show inner contetn
         };
 
         const closeHandler = () => {
