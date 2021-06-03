@@ -173,14 +173,14 @@
         );
       }
 
-      function ToggleFolder({ hasSubfolders = false }) {
+      function ToggleFolder({ hasInnerContent = false }) {
         const { useState } = React;
 
         const [isHover, setIsHover] = useState(false);
         const [isOpen, setIsOpen] = useState(false);
 
         const setHoveredColorHandler = () => {
-          if(hasSubfolders && !isOpen){
+          if(hasInnerContent && !isOpen){
             setIsHover(true);
           }
         };
@@ -202,7 +202,7 @@
 
         const clickHandler = (e) => {
           e.preventDefault();
-          if( !isOpen && hasSubfolders ){
+          if( !isOpen && hasInnerContent ){
             openHandler();
           }else{
             closeHandler();
@@ -215,7 +215,7 @@
             classes += ' slds-checkbox-button_is-checked'; 
           }
 
-          if(!hasSubfolders){
+          if(!hasInnerContent){
             classes += ' setDefaultCursor';
           }
 
