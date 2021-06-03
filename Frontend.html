@@ -1,5 +1,8 @@
 <html>
   <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>React App</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -27,8 +30,12 @@
           Helvetica Neue, sans-serif;
       }
 
-      .emptySpace{
-        width: 5px;
+      th:hover img.toggleOpenCloseIconImg {
+        background-color: red;
+      }
+
+      .emptySpace {
+        width: 20px;
       }
 
       .myHeader {
@@ -36,7 +43,7 @@
         flex: 1;
       }
 
-      .findDEButton{
+      .findDEButton {
         margin: 0 10px;
       }
 
@@ -49,9 +56,19 @@
         margin: 20px;
       }
 
-      .searchDataExtensionContainer{
+      .toggleOpenCloseIconImg {
+        width: 20px;
+        height: 20px;
+        max-width: 20px;
+      }
+
+      .searchDataExtensionContainer {
         display: flex;
-        margin-top: auto; 
+        margin-top: auto;
+      }
+
+      .setDefaultCursor{
+        cursor: default; 
       }
     </style>
   </head>
@@ -78,8 +95,7 @@
             <thead>
               <tr className="slds-line-height_reset">
                 <th className="emptySpace" scope="col">
-                  <div className="slds-truncate">
-                  </div>
+                  <div className="slds-truncate"></div>
                 </th>
                 <th className="" scope="col">
                   <div className="slds-truncate" title="Name">
@@ -103,7 +119,9 @@
                 </th>
               </tr>
             </thead>
-            <tbody>table</tbody>
+            <tbody>
+              <FolderItem />
+            </tbody>
           </table>
         );
       }
@@ -122,13 +140,113 @@
       }
 
       // List Item
-      function ListItem(){
-        
-      }
+      function ListItem() {}
 
       // Item
-      function Item(){
-        
+      function FolderItem() {
+        return (
+          <tr className="slds-hint-parent">
+            <td data-label="Open Icon" scope="row">
+              <ToggleFolder />
+            </td>
+            <th data-label="FolderName" scope="row">
+              <div className="slds-truncate" title="FolderName">
+                Folder 1
+              </div>
+            </th>
+            {/* <td data-label="Customer Key">
+              <div className="slds-truncate" title="Customer Key">
+                hi
+              </div>
+            </td>
+            <td data-label="Date Created">
+              <div className="slds-truncate" title="date">
+                date
+              </div>
+            </td>
+            <td data-label="Path">
+              <div className="slds-truncate" title="Path">
+                hi
+              </div>
+            </td> */}
+          </tr>
+        );
+      }
+
+      function ToggleFolder({ hasSubfolders = false }) {
+        const { useState } = React;
+
+        const [isHover, setIsHover] = useState(false);
+        const [isOpen, setIsOpen] = useState(false);
+
+        const setHoveredColorHandler = () => {
+          if(hasSubfolders && !isOpen){
+            setIsHover(true);
+          }
+        };
+
+        const setNormalColorHandler = () => {
+          setIsHover(false);
+        };
+
+        const openHandler = () => {
+          setIsOpen(true);
+          setIsHover(false);
+          // To do: display folders
+        };
+
+        const closeHandler = () => {
+          setIsOpen(false);
+          // To do: display folders
+        };
+
+        const clickHandler = (e) => {
+          e.preventDefault();
+          if( !isOpen && hasSubfolders ){
+            openHandler();
+          }else{
+            closeHandler();
+          }
+        }
+
+        const setStyleClasses = () => {
+          let classes = 'slds-checkbox-button';
+          if(isHover){
+            classes += ' slds-checkbox-button_is-checked'; 
+          }
+
+          if(!hasSubfolders){
+            classes += ' setDefaultCursor';
+          }
+
+          return classes;
+        };
+
+        return (
+          <label
+            className={setStyleClasses()}
+            htmlFor="example-unique-id-132"
+            onMouseEnter={setHoveredColorHandler}
+            onMouseLeave={setNormalColorHandler}
+            onClick={clickHandler}
+          >
+            <input
+              type="checkbox"
+              className="slds-assistive-text"
+              id="example-unique-id-132"
+              value="example-unique-id-132"
+              tabIndex="-1"
+            />
+            <span
+              className="slds-icon_container slds-icon-utility-check slds-current-color"
+            >
+              <img
+                src={isOpen ? "./images/arrowdown_60.png" : "./images/arrow_right_60.png"}
+                className="toggleOpenCloseIconImg"
+              />
+            </span>
+          </label>
+        );
       }
 
       // App Header
@@ -139,7 +257,7 @@
               <div className="slds-page-header__col-title">
                 <div className="slds-media">
                   <div className="slds-media__figure">
-                    <img src="./box_notes.svg" />
+                    <img src="./images/box_notes.svg" />
                     <span className="slds-assistive-text">DEs</span>
                   </div>
                   <div className="slds-media__body">
@@ -167,9 +285,9 @@
       // Data Extension Search
       function DataExtensionSearch(params) {
         return (
-        <div className="slds-form searchDataExtensionContainer">
-          <div className="slds-form__row">
-            <div className="slds-form__item">
+          <div className="slds-form searchDataExtensionContainer">
+            <div className="slds-form__row">
+              <div className="slds-form__item">
                 <label
                   className="slds-form-element__label"
                   htmlFor="form-element-03"
@@ -179,7 +297,7 @@
                 <div
                   className={
                     "slds-form-element__control" +
-                    (/* hasError */false ? " slds-has-error" : "")
+                    /* hasError */ (false ? " slds-has-error" : "")
                   }
                 >
                   <input
@@ -190,21 +308,26 @@
                     className="slds-input"
                     // onChange={(e) => onChangeHandler(e.target.value)}
                   />
-                  {/* hasError */false ? (
-                    <div className="slds-form-element__help" id="form-error-01">
-                      Must have at least 4 chars
-                    </div>
-                  ) : null}
+                  {
+                    /* hasError */ false ? (
+                      <div
+                        className="slds-form-element__help"
+                        id="form-error-01"
+                      >
+                        Must have at least 4 chars
+                      </div>
+                    ) : null
+                  }
                 </div>
-                  <button
-                    className="slds-button slds-button_brand findDEButton"
-                    // onClick={onClickHandler}
-                  >
-                    Find
-                  </button>
+                <button
+                  className="slds-button slds-button_brand findDEButton"
+                  // onClick={onClickHandler}
+                >
+                  Find
+                </button>
               </div>
+            </div>
           </div>
-        </div>
         );
       }
 
