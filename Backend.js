@@ -4,20 +4,24 @@
   
   try {
     var operationOnItem = Request.GetQueryStringParameter("item");
+    var operationType = Request.GetQueryStringParameter("type");
     if( operationOnItem != 'dataextension' && operationOnItem != 'folder' ){
-      Platform.Function.RaiseError(Stringify({
-        errorMessage: 'item not valid'
-      }));
+      Platform.Function.RaiseError('INVALID_ITEM');
     }
-    
+
+    if( operationType != 'retrieveWithName' ){
+      Platform.Function.RaiseError('INVALID_OPERATION');
+    }
+
+
     Write('operationOnItem\n');
     Write(Stringify(operationOnItem) + '\n');
-    // var data = getPostData();
-    // Write('data received');
-    // Write(Stringify(data));
+    
   } catch (error) {
-    Write('error');
-    Write(Stringify(error));
+    Write('error\n');
+    Write(Stringify(error.message));
+
+
   }
 
   function getPostData(){
