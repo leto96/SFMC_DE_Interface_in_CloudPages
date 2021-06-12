@@ -9,7 +9,7 @@
       Platform.Function.RaiseError('INVALID_ITEM');
     }
 
-    if( operationType != 'retrieveWithName' ){
+    if( operationType != 'retrieveWithName' && operationType != 'retrieveByID' ){
       Platform.Function.RaiseError('INVALID_OPERATION');
     }
 
@@ -18,6 +18,9 @@
       switch( operationType ){
         case 'retrieveWithName':
           result = retrieveFolderByNameLike(api);
+          sendResponse( reduceFolders(result) );
+        case 'retrieveByID':
+          result = retrieveFolderByID(api);
           sendResponse( reduceFolders(result) );
         default:
           Platform.Function.RaiseError('INVALID_OPERATION_ON_FOLDER');
@@ -52,7 +55,18 @@
     var DEsFound = DataExtensionCollection({api:api}).getDEWithNameLike(DENameToLookLike);
     return DEsFound;
   }
+  
+  function retrieveFolderByID(api){
+    var postedData = getPostData();
+    var folderIdToLookUp = postedData.id;
+    
+    if( folderIdToLookUp == null || folderIdToLookUp == undefined ){
+      Platform.Function.RaiseError('INVALID_ID');
+    }
 
+    var foldersFound = DataExtensionFolders({api: api}).getFolderByID(folderIdToLookUp);
+    return foldersFound;
+  }
 
   function retrieveFolderByNameLike(api){
     var postedData = getPostData();
@@ -157,7 +171,7 @@
         function(val){ return generateFolderObject(val) });
     }
   
-    function getSingleFolderByID(id){
+    function getFolderByID(id){
       var folderFitler = {
         LeftOperand: {
           Property: "ID",
@@ -173,7 +187,7 @@
       };
   
       var folderRetreiveResult = api.retrieve('DataFolder', headers,  folderFitler);
-      mapArray(folderRetreiveResult.Results, function(val){ return generateFolderObject(val) });
+      return mapArray(folderRetreiveResult.Results, function(val){ return generateFolderObject(val) });
       
     }
   
@@ -319,7 +333,7 @@
   
     return {
       retrieveFoldersByName: retrieveFoldersByName,
-      getSingleFolderByID: getSingleFolderByID,
+      getFolderByID: getFolderByID,
       getInsideFolders: getInsideFolders,
       getDeepInsideFolders: getDeepInsideFolders,
       getFoldersByNameLike: getFoldersByNameLike
