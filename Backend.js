@@ -9,10 +9,6 @@
       Platform.Function.RaiseError('INVALID_ITEM');
     }
 
-    if( operationType != 'retrieveWithName' && operationType != 'retrieveByID' ){
-      Platform.Function.RaiseError('INVALID_OPERATION');
-    }
-
     var result;
     if( operationOnItem == 'folder' ){
       switch( operationType ){
@@ -21,6 +17,9 @@
           sendResponse( reduceFolders(result) );
         case 'retrieveByID':
           result = retrieveFolderByID(api);
+          sendResponse( reduceFolders(result) );
+        case 'retrieveChildrenFolder':
+          result = retrieveChildrenFolderByID(api);
           sendResponse( reduceFolders(result) );
         default:
           Platform.Function.RaiseError('INVALID_OPERATION_ON_FOLDER');
@@ -31,8 +30,11 @@
         case 'retrieveWithName':
           result = retrieveDEByNameLike(api);
           sendResponse( reduceDEs(result) );
+        case 'retrieveFromFolder':
+          result = retrieveDEInsideFolder(api);
+          sendResponse( reduceDEs(result) );
         default:
-          Platform.Function.RaiseError('INVALID_OPERATION_ON_FOLDER');
+          Platform.Function.RaiseError('INVALID_OPERATION_ON_DE');
           break;
       }
     }
@@ -55,6 +57,18 @@
     var DEsFound = DataExtensionCollection({api:api}).getDEWithNameLike(DENameToLookLike);
     return DEsFound;
   }
+
+  function retrieveDEInsideFolder(api) {
+    var postedData = getPostData();
+    var folderIDToLookUp = postedData.folderID;
+    
+    if( folderIDToLookUp == null || folderIDToLookUp == undefined){
+      Platform.Function.RaiseError('INVALID_ID');
+    }
+
+    var DEsFound = DataExtensionCollection({api:api}).getDEsInisdeFolder(folderIDToLookUp);
+    return DEsFound;
+  }
   
   function retrieveFolderByID(api){
     var postedData = getPostData();
@@ -68,6 +82,18 @@
     return foldersFound;
   }
 
+  function retrieveChildrenFolderByID(api){
+    var postedData = getPostData();
+    var folderIdToLookUp = postedData.id;
+    
+    if( folderIdToLookUp == null || folderIdToLookUp == undefined ){
+      Platform.Function.RaiseError('INVALID_ID');
+    }
+
+    var foldersFound = DataExtensionFolders({api: api}).getInsideFolders(folderIdToLookUp);
+    return foldersFound;
+  }
+  
   function retrieveFolderByNameLike(api){
     var postedData = getPostData();
     var folderNameToLookLike = postedData.name;
@@ -436,9 +462,17 @@
       return retrievedDE.Results;
     }
   
+    function getDEsInisdeFolder(folderID){
+      var des = retriveDEs('CategoryID', 'equals', folderID);
+  
+      return mapArray(des, function(de){
+        return generateDataExtensionObject(de);
+      });
+    }
+  
     function getDEWithNameLike(name){
       var des = retriveDEs('Name', 'like', name);
-  
+      
       return mapArray(des, function(de){
         return generateDataExtensionObject(de);
       });
@@ -449,7 +483,8 @@
     }
     
     return {
-      getDEWithNameLike: getDEWithNameLike
+      getDEWithNameLike: getDEWithNameLike,
+      getDEsInisdeFolder: getDEsInisdeFolder
     }
   }
 // </script>
