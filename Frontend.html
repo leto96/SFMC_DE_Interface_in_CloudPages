@@ -30,6 +30,36 @@
           Helvetica Neue, sans-serif;
       }
 
+      #myApp {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
+        height: 600px;
+      }
+
+      #myHeader {
+        width: 100%;
+        height: 110px;
+      }
+
+      #AppBody{
+        display: flex;
+      }
+
+      #sidebar{
+        flex: 1;
+        background-color: red;
+        border: #f3f2f2;
+        border-style: solid;
+        border-width: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+      #apptable{
+        flex: 6;
+      }
+
       th:hover img.toggleOpenCloseIconImg {
         background-color: red;
       }
@@ -38,22 +68,8 @@
         width: 20px;
       }
 
-      .myHeader {
-        width: 100%;
-        flex: 1;
-      }
-
       .findDEButton {
         margin: 0 10px;
-      }
-
-      #myApp {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 20px;
       }
 
       .linkToGetDataExtension{
@@ -108,7 +124,17 @@
         return (
           <div id="myApp">
             <AppHeader />
-            <AppTable dataExtensions={dataExtensions} folders={folders} />
+            <div id='AppBody'>
+              <SideBar />
+              <AppTable dataExtensions={dataExtensions} folders={folders} />
+            </div>
+          </div>
+        );
+      }
+
+      function SideBar(params) {
+        return(
+          <div id="sidebar">
           </div>
         );
       }
@@ -116,7 +142,7 @@
       // Main table
       function AppTable({ dataExtensions = [], folders = [] }) {
         return (
-          <table className="slds-table slds-table_cell-buffer slds-table_bordered">
+          <table id='apptable' className="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
               <tr className="slds-line-height_reset">
                 <th className="emptySpace" scope="col">
@@ -155,7 +181,7 @@
           </table>
         );
       }
-
+      
       // Spinner
       function Spinner() {
         return (
@@ -240,6 +266,7 @@
         );
       }
 
+      // Button to access folder
       function ToggleFolder({ hasInnerContent = false, openClickHandler }) {
         const { useState } = React;
 
@@ -308,7 +335,7 @@
       // App Header
       function AppHeader() {
         return (
-          <div className="slds-page-header myHeader">
+          <div id="myHeader" className="slds-page-header">
             <div className="slds-page-header__row">
               <div className="slds-page-header__col-title">
                 <div className="slds-media">
