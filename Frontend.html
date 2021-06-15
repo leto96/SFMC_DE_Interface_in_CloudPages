@@ -30,12 +30,17 @@
           Helvetica Neue, sans-serif;
       }
 
+      ul {
+        margin-left: 10px;
+      }
+
       #myApp {
         flex-direction: column;
         justify-content: center;
         align-items: center;
         margin: 20px;
         height: 600px;
+        min-width: 750px;
       }
 
       #myHeader {
@@ -58,6 +63,7 @@
 
       #apptable{
         flex: 6;
+        width: 100%;
       }
 
       th:hover img.toggleOpenCloseIconImg {
@@ -135,6 +141,21 @@
       function SideBar(params) {
         return(
           <div id="sidebar">
+            <ul>
+              <li>hi</li>
+              <li>hi</li>
+              <ul>
+              <li>hi</li>
+              <li>hi</li>
+            <ul>
+              <li>hi</li>
+              <li>hi</li>
+              <li>hi</li>
+              </ul>
+              </ul>
+              <li>hi</li>
+
+            </ul>
           </div>
         );
       }
