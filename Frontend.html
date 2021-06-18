@@ -54,7 +54,7 @@
 
       #sidebar{
         flex: 1;
-        background-color: red;
+        background-color: #fff;
         border: #f3f2f2;
         border-style: solid;
         border-width: 5px;
@@ -113,19 +113,43 @@
 
     <!-- REACT Scripts -->
     <script type="text/babel">
+
       // Main APP
       function App() {
-        const folders = [
-          { type: 'Folder', name: 'Folder 1', customerKey: 'AAA-AAAAA-AAAAA-AAAA'},
-          { type: 'Folder', name: 'Folder 2', customerKey: 'bbbb-AAAAA-AAAAA-AAAA'},
-          { type: 'Folder', name: 'Folder 3', customerKey: 'cccc-AAAAA-AAAAA-AAAA'}
-        ];
+        const [itens, setItens] = React.useState([]);
+        const instance = axios.create({
+          baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-        const dataExtensions = [
-          { type: 'DataExtension', name: 'Dummy DE 1', customerKey: '11', path: 'some/path', createdDate: (new Date()).toString() },
-          { type: 'DataExtension', name: 'Dummy DE 2', customerKey: '22', path: 'some/path', createdDate: (new Date()).toString() },
-          { type: 'DataExtension', name: 'Dummy DE 3', customerKey: '33', path: 'some/path', createdDate: (new Date()).toString() }
-        ];
+        console.log(itens);
+          
+        React.useEffect(() => {
+          retrieveDEByName('Data Extension');
+        }, []);
+
+        const retriever = (field, value, itemType, operation) => {
+          instance.defaults.params = {
+            'item': itemType, 
+            'type': operation
+          }
+          return instance.post('/devinscriptcode', JSON.stringify({[field]: value}) ).then(res => {
+            const des = res.data.map( de => ({ type: itemType, ...de }) );
+            return des;
+          }).catch(e => {
+            console.log(e);
+          });
+        }
+
+        const retrieveDEByName = async (name) => {
+          const des = await retriever('name', name, 'dataextension', 'retrieveWithName');
+          setItens(des);
+        };
+
+        const dataExtensions = [];
+        const folders = [];
 
         return (
           <div id="myApp">
@@ -154,7 +178,6 @@
               </ul>
               </ul>
               <li>hi</li>
-
             </ul>
           </div>
         );
