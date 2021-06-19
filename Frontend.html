@@ -134,6 +134,7 @@
           // retrieveFoldersById(10770);
           // retrieveDEsInsideFolder(10770);
           // retrieveChildrenFolders(10770);
+          startRequest();
         }, []);
 
         const retriever = (field, value, itemType, operation) => {
@@ -160,8 +161,8 @@
         };
 
         const retrieveFoldersByName = async (name) => {
-          const folders = await retriever('name', name, 'folder', 'retrieveWithName');
-          setItens(folders);
+          return retriever('name', name, 'folder', 'retrieveWithName');
+          
         };
 
         const retrieveFoldersById = async (id) => {
@@ -173,6 +174,16 @@
           const folders = await retriever('id', id, 'folder', 'retrieveChildrenFolder');
           setItens(folders);
         };
+
+        const startRequest = async () => {
+          // Get root folder
+          const folder = await retrieveFoldersByName('Data Extensions');
+          const rootFolder = folder.filter( f => f.name === 'Data Extensions')[0];
+          // Look for DEs inside this folder
+          // Look for Folders inside this folder
+          // Insert found folders in currentFoundFolder
+          console.log(rootFolder);
+        }
 
         const dataExtensions = [];
         const folders = [];
