@@ -127,7 +127,8 @@
         console.log(itens);
           
         React.useEffect(() => {
-          retrieveDEByName('Data Extension');
+          // retrieveDEByName('Data Extension');
+          retrieveFoldersByName('Data Extension');
         }, []);
 
         const retriever = (field, value, itemType, operation) => {
@@ -136,8 +137,8 @@
             'type': operation
           }
           return instance.post('/devinscriptcode', JSON.stringify({[field]: value}) ).then(res => {
-            const des = res.data.map( de => ({ type: itemType, ...de }) );
-            return des;
+            const items = res.data.map( item => ({ type: itemType, ...item }) );
+            return items;
           }).catch(e => {
             console.log(e);
           });
@@ -146,6 +147,11 @@
         const retrieveDEByName = async (name) => {
           const des = await retriever('name', name, 'dataextension', 'retrieveWithName');
           setItens(des);
+        };
+
+        const retrieveFoldersByName = async (name) => {
+          const folders = await retriever('name', name, 'folder', 'retrieveWithName');
+          setItens(folders);
         };
 
         const dataExtensions = [];
