@@ -117,21 +117,23 @@
       // Main APP
       function App() {
         const [itens, setItens] = React.useState([]);
+        const [isLoading, setIsLoading] = React.useState(false);
+        const [mode, setMode] = React.useState('Navigation');
+        const [currentFolder, setCurrentFolder] = React.useState(null);
+        const [currentFoundFolders, setCurrentFoundFolders] = React.useState([]);
         const instance = axios.create({
           baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
           headers: {
             'Content-Type': 'application/json'
           }
         });
-
-        console.log(itens);
           
         React.useEffect(() => {
           // retrieveDEByName('Data Extension');
           // retrieveFoldersByName('Data Extension');
           // retrieveFoldersById(10770);
           // retrieveDEsInsideFolder(10770);
-          retrieveChildrenFolders(10770);
+          // retrieveChildrenFolders(10770);
         }, []);
 
         const retriever = (field, value, itemType, operation) => {
