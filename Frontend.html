@@ -128,7 +128,8 @@
           
         React.useEffect(() => {
           // retrieveDEByName('Data Extension');
-          retrieveFoldersByName('Data Extension');
+          // retrieveFoldersByName('Data Extension');
+          retrieveFoldersById(10770);
         }, []);
 
         const retriever = (field, value, itemType, operation) => {
@@ -151,6 +152,11 @@
 
         const retrieveFoldersByName = async (name) => {
           const folders = await retriever('name', name, 'folder', 'retrieveWithName');
+          setItens(folders);
+        };
+
+        const retrieveFoldersById = async (id) => {
+          const folders = await retriever('id', id, 'folder', 'retrieveByID');
           setItens(folders);
         };
 
