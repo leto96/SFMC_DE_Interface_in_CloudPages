@@ -129,6 +129,7 @@
         });
           
         React.useEffect(() => {
+          setIsLoading(true);
           // retrieveDEByName('Data Extension');
           // retrieveFoldersByName('Data Extension');
           // retrieveFoldersById(10770);
@@ -139,9 +140,10 @@
 
         const retriever = (field, value, itemType, operation) => {
           instance.defaults.params = {
-            'item': itemType, 
+            'item': itemType,
             'type': operation
           }
+
           return instance.post('/devinscriptcode', JSON.stringify({[field]: value}) ).then(res => {
             const items = res.data.map( item => ({ type: itemType, ...item }) );
             return items;
@@ -155,9 +157,8 @@
           setItens(des);
         };
 
-        const retrieveDEsInsideFolder = async (id) => {
-          const des = await retriever('folderID', id, 'dataextension', 'retrieveFromFolder');
-          setItens(des);
+        const retrieveDEsInsideFolder = (id) => {
+          return retriever('folderID', id, 'dataextension', 'retrieveFromFolder');
         };
 
         const retrieveFoldersByName = async (name) => {
@@ -170,9 +171,8 @@
           setItens(folders);
         };
 
-        const retrieveChildrenFolders = async (id) => {
-          const folders = await retriever('id', id, 'folder', 'retrieveChildrenFolder');
-          setItens(folders);
+        const retrieveChildrenFolders = (id) => {
+          return retriever('id', id, 'folder', 'retrieveChildrenFolder');
         };
 
         const startRequest = async () => {
@@ -180,9 +180,26 @@
           const folder = await retrieveFoldersByName('Data Extensions');
           const rootFolder = folder.filter( f => f.name === 'Data Extensions')[0];
           // Look for DEs inside this folder
+          const DEs = await retrieveDEsInsideFolder(rootFolder.id);
           // Look for Folders inside this folder
+          const childrenFolders = await retrieveChildrenFolders(rootFolder.id);
           // Insert found folders in currentFoundFolder
-          console.log(rootFolder);
+          const childrenFoldersObj = childrenFolders.reduce( (current, total) =>  {
+            let updated = {...current, [total.id]: total};
+            delete updated[ total.id ].id;
+            return updated;
+          }, {});
+
+          const auxTMPFolder = { [rootFolder.id]: rootFolder };
+          delete auxTMPFolder[ rootFolder.id ].id;
+          setCurrentFoundFolders( {...auxTMPFolder, ...childrenFoldersObj} );
+
+          // Set Itens
+          setItens([rootFolder, ...childrenFolders, ...DEs]);
+
+          // set currentFolder
+          setCurrentFolder(rootFolder.id);
+          setIsLoading(false);
         }
 
         const dataExtensions = [];
