@@ -196,7 +196,46 @@
 
           // set currentFolder
           setCurrentFolder(rootFolder.id);
+        }
+        
+
+        const onClickedItemNameHandler = (item) => {
+          setIsLoading(true);
+          setMode('Navigation');
+          if(item.type === 'dataextension'){
+            onClickedDataExtensionHandler();
+          }else{
+            onClickedFolderHandler(item);
+          }
+        };
+
+        const onClickedDataExtensionHandler = () => {
+          alert('Not implemented yet');
           setIsLoading(false);
+        }
+
+        const onClickedFolderHandler = (item) => {
+          retrieveFoldersAndDEInsideFolder(item);
+        }
+
+        const retrieveFoldersAndDEInsideFolder = async (item) => {
+          // Look for DEs inside this folder
+          const DEs = await retrieveDEsInsideFolder(item.id);
+          
+          // Look for Folders inside this folder
+          const childrenFolders = await retrieveChildrenFolders(item.id);
+          setCurrentFoundFolders( {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)} );
+          setItens([...childrenFolders, ...DEs]);
+          setCurrentFolder(item.id);
+          setIsLoading(false);
+        }
+
+        const foldersArrayToObject = (folders) => {
+          return folders.reduce( (current, total) =>  {
+            let updated = {...current, [total.id]: total};
+            delete updated[ total.id ].id;
+            return updated;
+          }, {});
         }
 
         const dataExtensions = [];
@@ -212,7 +251,6 @@
           </div>
         );
       }
-      console.log(itens);
 
       function SideBar(params) {
         return(
