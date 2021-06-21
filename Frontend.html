@@ -185,13 +185,10 @@
           const childrenFolders = await retrieveChildrenFolders(rootFolder.id);
           // Insert found folders in currentFoundFolder
           const childrenFoldersObj = childrenFolders.reduce( (current, total) =>  {
-            let updated = {...current, [total.id]: total};
-            delete updated[ total.id ].id;
-            return updated;
+            return {...current, [total.id]: total};
           }, {});
 
           const auxTMPFolder = { [rootFolder.id]: rootFolder };
-          delete auxTMPFolder[ rootFolder.id ].id;
           setCurrentFoundFolders( {...auxTMPFolder, ...childrenFoldersObj} );
 
           // Set Itens
@@ -215,6 +212,7 @@
           </div>
         );
       }
+      console.log(itens);
 
       function SideBar(params) {
         return(
