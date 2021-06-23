@@ -135,7 +135,8 @@
           // retrieveFoldersById(10770);
           // retrieveDEsInsideFolder(10770);
           // retrieveChildrenFolders(10770);
-          startRequest();
+          // startRequest();
+          testSearch();
         }, []);
 
         const retriever = (field, value, itemType, operation) => {
@@ -153,8 +154,7 @@
         }
 
         const retrieveDEByName = async (name) => {
-          const des = await retriever('name', name, 'dataextension', 'retrieveWithName');
-          setItens(des);
+          return await retriever('name', name, 'dataextension', 'retrieveWithName');
         };
 
         const retrieveDEsInsideFolder = (id) => {
@@ -163,12 +163,10 @@
 
         const retrieveFoldersByName = async (name) => {
           return retriever('name', name, 'folder', 'retrieveWithName');
-          
         };
 
         const retrieveFoldersById = async (id) => {
-          const folders = await retriever('id', id, 'folder', 'retrieveByID');
-          setItens(folders);
+          return await retriever('id', id, 'folder', 'retrieveByID');
         };
 
         const retrieveChildrenFolders = (id) => {
@@ -195,9 +193,8 @@
           setItens([rootFolder, ...childrenFolders, ...DEs]);
 
           // set currentFolder
-          setCurrentFolder(rootFolder.id);
+          setCurrentFolder(rootFolder);
         }
-        
 
         const onClickedItemNameHandler = (item) => {
           setIsLoading(true);
@@ -231,11 +228,37 @@
         }
 
         const foldersArrayToObject = (folders) => {
-          return folders.reduce( (current, total) =>  {
-            let updated = {...current, [total.id]: total};
-            delete updated[ total.id ].id;
-            return updated;
-          }, {});
+          return folders.reduce( (current, total) =>  ({...current, [total.id]: total}), {});
+        }
+
+        const onSearchNameHandler = async (name) => {
+          setIsLoading(true);
+          setMode('Search');
+
+          const childrenFolders = await retrieveFoldersByName(name);
+          const DEs = await retrieveDEByName(name);
+          const items = [...childrenFolders, ...DEs];
+          const sortedItems = [];
+          
+          setCurrentFoundFolders( {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)} );
+          items.sort(sortSearchResult);
+          setItens(items);
+          setIsLoading(false);
+        }
+
+        const sortSearchResult = (a, b) => {
+          let aFolderID = a.id || a.folderID;
+          let bFolderID = b.id || b.folderID;
+
+          if( aFolderID === currentFolder.id && aFolderID !== currentFolder.id){
+            return -1;
+          }else if( aFolderID !== currentFolder.id && aFolderID === currentFolder.id){
+            return 1;
+          }else if(a.type === 'folder' && b.type !== 'folder'){
+            return -1;
+          }else if(a.type !== 'folder' && b.type === 'folder'){
+            return 1;
+          }
         }
 
         const dataExtensions = [];
