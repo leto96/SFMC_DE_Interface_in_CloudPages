@@ -120,13 +120,7 @@
         const [isLoading, setIsLoading] = React.useState(false);
         const [mode, setMode] = React.useState('Navigation');
         const [currentFolder, setCurrentFolder] = React.useState(null);
-        const [currentFoundFolders, setCurrentFoundFolders] = React.useState([]);
-        const instance = axios.create({
-          baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        const currentFoundFolders = React.useRef({});
           
         React.useEffect(() => {
           setIsLoading(true);
@@ -136,8 +130,10 @@
           // retrieveDEsInsideFolder(10770);
           // retrieveChildrenFolders(10770);
           // startRequest();
-          testSearch();
+          // testSearch();
+          // elaborateFolderFullPath(317281);
         }, []);
+
 
         const retriever = (field, value, itemType, operation) => {
           instance.defaults.params = {
@@ -149,7 +145,6 @@
             const items = res.data.map( item => ({ type: itemType, ...item }) );
             return items;
           }).catch(e => {
-            console.log(e);
           });
         }
 
@@ -187,7 +182,7 @@
           }, {});
 
           const auxTMPFolder = { [rootFolder.id]: rootFolder };
-          setCurrentFoundFolders( {...auxTMPFolder, ...childrenFoldersObj} );
+          currentFoundFolders.current = {...auxTMPFolder, ...childrenFoldersObj};
 
           // Set Itens
           setItens([rootFolder, ...childrenFolders, ...DEs]);
@@ -221,7 +216,7 @@
           
           // Look for Folders inside this folder
           const childrenFolders = await retrieveChildrenFolders(item.id);
-          setCurrentFoundFolders( {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)} );
+          currentFoundFolders.current = {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)};
           setItens([...childrenFolders, ...DEs]);
           setCurrentFolder(item.id);
           setIsLoading(false);
@@ -240,7 +235,7 @@
           const items = [...childrenFolders, ...DEs];
           const sortedItems = [];
           
-          setCurrentFoundFolders( {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)} );
+          currentFoundFolders.current = {...currentFoundFolders.current, ...foldersArrayToObject(childrenFolders)};
           items.sort(sortSearchResult);
           setItens(items);
           setIsLoading(false);
@@ -259,6 +254,24 @@
           }else if(a.type !== 'folder' && b.type === 'folder'){
             return 1;
           }
+        }
+
+        const elaborateFolderFullPath = async (id) => {
+          let path = [];
+          let folderID = id;
+
+          do{
+            let auxCurrentFolder;
+            if(!currentFoundFolders.current[folderID]){
+              auxCurrentFolder = (await retrieveFoldersById(folderID))[0];
+              currentFoundFolders.current = {...currentFoundFolders.current, [auxCurrentFolder.id]: auxCurrentFolder};
+            }else{
+              auxCurrentFolder = currentFoundFolders.current[folderID];
+            }
+            path.unshift( auxCurrentFolder.name );
+            folderID = auxCurrentFolder.parentID;
+          }while(folderID != 0)
+          return path.join('/');
         }
 
         const dataExtensions = [];
@@ -396,7 +409,6 @@
 
       // Item
       function FolderItem({ name = 'temporary', customerKey = 'AAA-AAAAA-AAAAA-AAAA'
-        , openClickHandler = () => { console.log('clicked '); } }) {
         return (
           <tr className="slds-hint-parent">
             <td data-label="Open Icon" scope="row">
