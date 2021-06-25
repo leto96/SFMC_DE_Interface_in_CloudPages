@@ -207,6 +207,7 @@
         }
 
         const onClickedFolderHandler = (item) => {
+          setCurrentFolder(item.id);
           retrieveFoldersAndDEInsideFolder(item);
         }
 
@@ -218,7 +219,6 @@
           const childrenFolders = await retrieveChildrenFolders(item.id);
           currentFoundFolders.current = {...currentFoundFolders, ...foldersArrayToObject(childrenFolders)};
           setItens([...childrenFolders, ...DEs]);
-          setCurrentFolder(item.id);
           setIsLoading(false);
         }
 
