@@ -121,6 +121,12 @@
         const [mode, setMode] = React.useState('Navigation');
         const [currentFolder, setCurrentFolder] = React.useState(null);
         const currentFoundFolders = React.useRef({});
+        const instance = axios.create({
+          baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
           
         React.useEffect(() => {
           setIsLoading(true);
@@ -129,11 +135,16 @@
           // retrieveFoldersById(10770);
           // retrieveDEsInsideFolder(10770);
           // retrieveChildrenFolders(10770);
-          // startRequest();
+          startRequest();
           // testSearch();
           // elaborateFolderFullPath(317281);
         }, []);
 
+        React.useEffect(() => {
+          if(itens && itens[0] && (itens[0].path === undefined || itens[0].path === null)){
+            elaborateItensFullPath(itens);
+          }
+        }, [itens]);
 
         const retriever = (field, value, itemType, operation) => {
           instance.defaults.params = {
@@ -260,6 +271,8 @@
           let path = [];
           let folderID = id;
 
+          if(folderID === 0) return '/';
+
           do{
             let auxCurrentFolder;
             if(!currentFoundFolders.current[folderID]){
@@ -271,7 +284,18 @@
             path.unshift( auxCurrentFolder.name );
             folderID = auxCurrentFolder.parentID;
           }while(folderID != 0)
-          return path.join('/');
+          return (path.join('/') + '/');
+        }
+
+        const elaborateItensFullPath = async (items) => {
+          // TO DO: Tentar trocar para um for
+          const newItems = [];
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const elaboratedPath = await elaborateFolderFullPath(item.type === 'folder' ? item.parentID : item.folderID);
+            newItems.push({...item, path: elaboratedPath});
+          }
+          setItens(newItems);
         }
 
         const dataExtensions = [];
@@ -408,7 +432,7 @@
       }
 
       // Item
-      function FolderItem({ name = 'temporary', customerKey = 'AAA-AAAAA-AAAAA-AAAA'
+      function FolderItem({ name = 'temporary', customerKey = 'AAA-AAAAA-AAAAA-AAAA' }){
         return (
           <tr className="slds-hint-parent">
             <td data-label="Open Icon" scope="row">
