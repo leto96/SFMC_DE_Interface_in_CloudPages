@@ -299,14 +299,14 @@
           <div id="myApp">
             <AppHeader />
             <div id='AppBody'>
-              <SideBar />
+              <SideBar currentFolder={currentFolder} currentFoundFolders={currentFoundFolders} />
               <AppTable dataExtensions={dataExtensions} folders={folders} />
             </div>
           </div>
         );
       }
 
-      function SideBar(params) {
+      function SideBar({currentFolder, currentFoundFolders}) {
         return(
           <div id="sidebar">
             <ul>
@@ -326,13 +326,9 @@
           </div>
         );
       }
-
+      
       // Main table
       function AppTable({ dataExtensions = [], folders = [] }) {
-        console.log('dataExtensions');
-        console.log(dataExtensions);
-        console.log('folders');
-        console.log(folders);
         return (
           <table id='apptable' className="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
