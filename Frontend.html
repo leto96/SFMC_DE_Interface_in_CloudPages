@@ -120,6 +120,7 @@
         const [isLoading, setIsLoading] = React.useState(false);
         const [mode, setMode] = React.useState('Navigation');
         const [currentFolder, setCurrentFolder] = React.useState(null);
+        const [error, setError] = React.useState('');
         const currentFoundFolders = React.useRef({});
         const instance = axios.create({
           baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
@@ -139,6 +140,7 @@
         }, [itens]);
 
         const retriever = (field, value, itemType, operation) => {
+          setError('');
           instance.defaults.params = {
             'item': itemType,
             'type': operation
@@ -148,6 +150,7 @@
             const items = res.data.map( item => ({ type: itemType, ...item }) );
             return items;
           }).catch(e => {
+            setError(e.response.data);
           });
         }
 
