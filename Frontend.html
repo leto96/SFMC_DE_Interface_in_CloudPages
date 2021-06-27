@@ -129,15 +129,7 @@
         });
           
         React.useEffect(() => {
-          setIsLoading(true);
-          // retrieveDEByName('Data Extension');
-          // retrieveFoldersByName('Data Extension');
-          // retrieveFoldersById(10770);
-          // retrieveDEsInsideFolder(10770);
-          // retrieveChildrenFolders(10770);
           startRequest();
-          // testSearch();
-          // elaborateFolderFullPath(317281);
         }, []);
 
         React.useEffect(() => {
@@ -180,6 +172,7 @@
         };
 
         const startRequest = async () => {
+          setIsLoading(true);
           // Get root folder
           const folder = await retrieveFoldersByName('Data Extensions');
           const rootFolder = folder.filter( f => f.name === 'Data Extensions')[0];
@@ -200,6 +193,7 @@
 
           // set currentFolder
           setCurrentFolder(rootFolder);
+          setIsLoading(false);
         }
 
         const onClickedItemNameHandler = (item) => {
@@ -298,8 +292,8 @@
           setItens(newItems);
         }
 
-        const dataExtensions = [];
-        const folders = [];
+        const dataExtensions = itens.filter( item => item.type === 'dataextension');
+        const folders = itens.filter( item => item.type === 'folder');;
 
         return (
           <div id="myApp">
@@ -335,6 +329,10 @@
 
       // Main table
       function AppTable({ dataExtensions = [], folders = [] }) {
+        console.log('dataExtensions');
+        console.log(dataExtensions);
+        console.log('folders');
+        console.log(folders);
         return (
           <table id='apptable' className="slds-table slds-table_cell-buffer slds-table_bordered">
             <thead>
