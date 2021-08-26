@@ -17,95 +17,11 @@
     />
 
     <style>
-      html {
-        background: #b0c4df;
-      }
-
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-        font-family: "Salesforce Sans", -apple-system, BlinkMacSystemFont,
-          Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-          Helvetica Neue, sans-serif;
-      }
-
-      ul {
-        margin-left: 10px;
-      }
-
-      #myApp {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 20px;
-        height: 600px;
-        min-width: 750px;
-      }
-
-      #myHeader {
-        width: 100%;
-        height: 110px;
-      }
-
-      #AppBody{
-        display: flex;
-      }
-
-      #sidebar{
-        flex: 1;
-        background-color: #fff;
-        border: #f3f2f2;
-        border-style: solid;
-        border-width: 5px;
-        border-bottom-left-radius: 5px;
-      }
-
-      #apptable{
-        flex: 6;
-        width: 100%;
-      }
-
-      th:hover img.toggleOpenCloseIconImg {
-        background-color: red;
-      }
-
-      .emptySpace {
-        width: 20px;
-      }
-
-      .findDEButton {
-        margin: 0 10px;
-      }
-
-      .linkToGetDataExtension{
-        cursor:pointer;
-        color:blue;
-      }
-
-      span.linkToGetDataExtension:hover {
-        text-decoration:underline;
-      }
-
-      .toggleOpenCloseIconImg {
-        width: 20px;
-        height: 20px;
-        max-width: 20px;
-      }
-
-      .searchDataExtensionContainer {
-        display: flex;
-        margin-top: auto;
-      }
-
-      td {
-        max-width: 600px;
-      }
-
-      .setDefaultCursor {
-        cursor: default;
+      #sidebar ul{
+        padding-left: 10px;
       }
     </style>
+
   </head>
 
   <body>
@@ -117,10 +33,14 @@
       // Main APP
       function App() {
         const [itens, setItens] = React.useState([]);
+        const [folders, setFolders] = React.useState([]);
+        const [dataExtensions, setDataExtensions] = React.useState([]);
+        const [rootfolder, setRootfolder] = React.useState({});
         const [isLoading, setIsLoading] = React.useState(false);
         const [mode, setMode] = React.useState('Navigation');
         const [currentFolder, setCurrentFolder] = React.useState(null);
         const [error, setError] = React.useState('');
+        
         const currentFoundFolders = React.useRef({});
         const instance = axios.create({
           baseURL: 'https://cloud.comunicacao.serasaexperian.com.br',
@@ -133,11 +53,13 @@
           startRequest();
         }, []);
 
-        React.useEffect(() => {
-          if(itens && itens[0] && (itens[0].path === undefined || itens[0].path === null)){
-            elaborateItensFullPath(itens);
-          }
-        }, [itens]);
+        const retriever2 = () => {
+          return instance.get('/devinscriptcode').then(res => {
+            return res.data;
+          }).catch(e => {
+            setError(e.response.data);
+          });
+        }
 
         const retriever = (field, value, itemType, operation) => {
           setError('');
@@ -176,26 +98,10 @@
 
         const startRequest = async () => {
           setIsLoading(true);
-          // Get root folder
-          const folder = await retrieveFoldersByName('Data Extensions');
-          const rootFolder = folder.filter( f => f.name === 'Data Extensions')[0];
-          // Look for DEs inside this folder
-          const DEs = await retrieveDEsInsideFolder(rootFolder.id);
-          // Look for Folders inside this folder
-          const childrenFolders = await retrieveChildrenFolders(rootFolder.id);
-          // Insert found folders in currentFoundFolder
-          const childrenFoldersObj = childrenFolders.reduce( (current, total) =>  {
-            return {...current, [total.id]: total};
-          }, {});
-
-          const auxTMPFolder = { [rootFolder.id]: rootFolder };
-          currentFoundFolders.current = {...auxTMPFolder, ...childrenFoldersObj};
-
-          // Set Itens
-          setItens([rootFolder, ...childrenFolders, ...DEs]);
-
-          // set currentFolder
-          setCurrentFolder(rootFolder);
+          const items = await retriever2();
+          setFolders(items.folders);
+          setDataExtensions(items.des);
+          setRootfolder( items.folders.find( folder => folder.ParentFolder.ID === 0 ) );
           setIsLoading(false);
         }
 
@@ -232,21 +138,6 @@
 
         const foldersArrayToObject = (folders) => {
           return folders.reduce( (current, total) =>  ({...current, [total.id]: total}), {});
-        }
-
-        const onSearchNameHandler = async (name) => {
-          setIsLoading(true);
-          setMode('Search');
-
-          const childrenFolders = await retrieveFoldersByName(name);
-          const DEs = await retrieveDEByName(name);
-          const items = [...childrenFolders, ...DEs];
-          const sortedItems = [];
-          
-          currentFoundFolders.current = {...currentFoundFolders.current, ...foldersArrayToObject(childrenFolders)};
-          items.sort(sortSearchResult);
-          setItens(items);
-          setIsLoading(false);
         }
 
         const sortSearchResult = (a, b) => {
@@ -294,39 +185,32 @@
           }
           setItens(newItems);
         }
-
-        const dataExtensions = itens.filter( item => item.type === 'dataextension');
-        const folders = itens.filter( item => item.type === 'folder');;
-
         return (
           <div id="myApp">
             <AppHeader />
             <div id='AppBody'>
-              <SideBar currentFolder={currentFolder} currentFoundFolders={currentFoundFolders} />
-              <AppTable dataExtensions={dataExtensions} folders={folders} />
+              {isLoading ? 'Loading...' : <SideBar rootfolder={rootfolder} folders={folders} dataExtensions={dataExtensions}/>}
             </div>
           </div>
         );
       }
 
-      function SideBar({currentFolder, currentFoundFolders}) {
+      function SideBar({rootfolder, folders, dataExtensions}) {
         return(
           <div id="sidebar">
-            <ul>
-              <li>hi</li>
-              <li>hi</li>
-              <ul>
-              <li>hi</li>
-              <li>hi</li>
-            <ul>
-              <li>hi</li>
-              <li>hi</li>
-              <li>hi</li>
-              </ul>
-              </ul>
-              <li>hi</li>
-            </ul>
+            <FolderGeneration rootfolder={rootfolder} folders={folders} dataExtensions={dataExtensions} />
           </div>
+        );
+      }
+
+      function FolderGeneration({rootfolder, folders, dataExtensions}) {
+        let thisFolderChildren = folders.filter( folder => (rootfolder.ID === folder.ParentFolder.ID) );
+        let thisFolderDEs = dataExtensions.filter(dataExtension => dataExtensions.CategoryID === rootfolder.ID)
+        return(
+            <ul>{rootfolder.Name}
+              {thisFolderChildren.map( childFolder => <FolderGeneration key={childFolder.ID} rootfolder={childFolder} folders={folders} dataExtensions={dataExtensions} /> )}
+              {thisFolderDEs.map( dataExtension => (<li key={dataExtension.ObjectID}><a>{dataExtension.Name}</a></li>) )}
+            </ul>
         );
       }
       
@@ -529,10 +413,6 @@
             <div className="slds-page-header__row">
               <div className="slds-page-header__col-title">
                 <div className="slds-media">
-                  <div className="slds-media__figure">
-                    <img src="./images/box_notes.svg" />
-                    <span className="slds-assistive-text">DEs</span>
-                  </div>
                   <div className="slds-media__body">
                     <div className="slds-page-header__name">
                       <div className="slds-page-header__name-title">
@@ -549,56 +429,6 @@
                   </div>
                 </div>
               </div>
-              <DataExtensionSearch />
-            </div>
-          </div>
-        );
-      }
-
-      // Data Extension Search
-      function DataExtensionSearch(params) {
-        return (
-          <div className="slds-form searchDataExtensionContainer">
-            <div className="slds-form__row">
-              <div className="slds-form__item">
-                <label
-                  className="slds-form-element__label"
-                  htmlFor="form-element-03"
-                >
-                  Data Extension Name
-                </label>
-                <div
-                  className={
-                    "slds-form-element__control" +
-                    /* hasError */ (false ? " slds-has-error" : "")
-                  }
-                >
-                  <input
-                    type="text"
-                    aria-invalid="true"
-                    aria-describedby="form-error-01"
-                    // value={deName}
-                    className="slds-input"
-                    // onChange={(e) => onChangeHandler(e.target.value)}
-                  />
-                  {
-                    /* hasError */ false ? (
-                      <div
-                        className="slds-form-element__help"
-                        id="form-error-01"
-                      >
-                        Must have at least 4 chars
-                      </div>
-                    ) : null
-                  }
-                </div>
-                <button
-                  className="slds-button slds-button_brand findDEButton"
-                  // onClick={onClickHandler}
-                >
-                  Find
-                </button>
-              </div>
             </div>
           </div>
         );
@@ -607,4 +437,4 @@
       ReactDOM.render(<App />, document.getElementById("mydiv"));
     </script>
   </body>
-</html>
+ </html>
